@@ -1,9 +1,27 @@
 'use client'
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+import { getDownloadURL, ref } from 'firebase/storage';
+import { storage } from '../../../firebase'
 
 export const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [logoUrl, setLogoUrl] = useState("");
+
+    useEffect(() => {
+        // Referencia a la imagen en Firebase Storage
+        const logoRef = ref(storage, 'WT-logo.png'); // Ajusta la ruta según tu almacenamiento
+
+        // Obtener la URL de descarga
+        getDownloadURL(logoRef)
+            .then((url) => {
+                setLogoUrl(url);
+            })
+            .catch((error) => {
+                console.error("Error al obtener la URL de la imagen:", error);
+            });
+    }, []);    
 
     function getMenuClasses() {
         return isOpen ? 
