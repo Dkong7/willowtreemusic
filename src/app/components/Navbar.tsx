@@ -2,8 +2,8 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
-import { getDownloadURL, ref } from 'firebase/storage';
 import { storage } from '../../../firebase'
+import { getDownloadURL, ref } from 'firebase/storage';
 
 export const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -11,7 +11,7 @@ export const Navbar = () => {
 
     useEffect(() => {
         // Referencia a la imagen en Firebase Storage
-        const logoRef = ref(storage, 'WT-logo.png'); // Ajusta la ruta según tu almacenamiento
+        const logoRef = ref(storage, 'WT-type-white.png'); // Ajusta la ruta según tu almacenamiento
 
         // Obtener la URL de descarga
         getDownloadURL(logoRef)
@@ -33,7 +33,7 @@ export const Navbar = () => {
         <nav className="bg-gray-800 bg-opacity-10 text-white p-4 sm:p-6 md:flex md:justify-between">
             <div className="container mx-auto flex justify-between items-center">
                 <a href="" className="text-2xl font-bold">
-                    WILLOW TREE MUSIC
+                    {logoUrl ? <img src={logoUrl} alt="Logo" className="h-16" /> : "WILLOW TREE MUSIC"}
                 </a>
                 <div className={getMenuClasses()}>
                     <Link href="/" className="mx-2 hover:text-gray-300">
@@ -75,4 +75,4 @@ export const Navbar = () => {
             </div>
         </nav>
     );
-}
+}; // Cerrar correctamente el componente
