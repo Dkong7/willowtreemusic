@@ -1,19 +1,18 @@
 'use client'
 import Link from "next/link";
-import { useState, useEffect } from "react";
-
-import { storage } from '../../../firebase'
+import { useState, useEffect, useRef } from "react";
+import { storage } from '../../../firebase';
 import { getDownloadURL, ref } from 'firebase/storage';
 
 export const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [servicesOpen, setServicesOpen] = useState(false);
     const [logoUrl, setLogoUrl] = useState("");
+    const servicesMenuRef = useRef<HTMLDivElement>(null); // Especificar el tipo aquí
 
     useEffect(() => {
-        // Referencia a la imagen en Firebase Storage
         const logoRef = ref(storage, 'WT-type-white.png'); // Ajusta la ruta según tu almacenamiento
 
-        // Obtener la URL de descarga
         getDownloadURL(logoRef)
             .then((url) => {
                 setLogoUrl(url);
@@ -21,7 +20,20 @@ export const Navbar = () => {
             .catch((error) => {
                 console.error("Error al obtener la URL de la imagen:", error);
             });
-    }, []);    
+    }, []);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) { // Definir el tipo del evento
+            if (servicesMenuRef.current && !servicesMenuRef.current.contains(event.target as Node)) {
+                setServicesOpen(false);
+            }
+        }
+        
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     function getMenuClasses() {
         return isOpen ? 
@@ -39,9 +51,42 @@ export const Navbar = () => {
                     <Link href="/" className="mx-2 hover:text-gray-300">
                         Home
                     </Link>
-                    <Link href="/tienda" className="mx-2 hover:text-gray-300">
-                        Tienda
+                    <Link href="/estudio" className="mx-2 hover:text-gray-300">
+                        Estudio
                     </Link>
+                    <Link href="/nosotros" className="mx-2 hover:text-gray-300">
+                        Nosotros
+                    </Link>
+                    <div className="relative mx-2" ref={servicesMenuRef}>
+                        <button 
+                            onClick={() => setServicesOpen(!servicesOpen)}
+                            className="hover:text-gray-300 focus:outline-none"
+                        >
+                            Servicios
+                        </button>
+                        {servicesOpen && (
+                            <div className="absolute left-0 mt-2 w-48 bg-gray-700 rounded-lg shadow-lg">
+                                <Link href="/servicios/produccion" className="block px-4 py-2 hover:bg-gray-600">
+                                    Producción
+                                </Link>
+                                <Link href="/servicios/mezcla" className="block px-4 py-2 hover:bg-gray-600">
+                                    Mezcla
+                                </Link>
+                                <Link href="/servicios/masterizacion" className="block px-4 py-2 hover:bg-gray-600">
+                                    Masterización
+                                </Link>
+                                <Link href="/servicios/grabacion" className="block px-4 py-2 hover:bg-gray-600">
+                                    Grabación
+                                </Link>
+                                <Link href="/servicios/instrument-coach" className="block px-4 py-2 hover:bg-gray-600">
+                                    Instrument Coach
+                                </Link>
+                                <Link href="/servicios/promocion" className="block px-4 py-2 hover:bg-gray-600">
+                                    Promoción
+                                </Link>
+                            </div>
+                        )}
+                    </div>
                     <Link href="/contacto" className="mx-2 hover:text-gray-300">
                         Contacto
                     </Link>
@@ -75,4 +120,4 @@ export const Navbar = () => {
             </div>
         </nav>
     );
-}; // Cerrar correctamente el componente
+};
